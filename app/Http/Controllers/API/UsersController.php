@@ -4,9 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Services\UsersService;
+use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\LazyCollection;
 
 class UsersController extends Controller
 {
@@ -31,30 +31,7 @@ class UsersController extends Controller
             $type = $this->usersService->providerMapping($provider);
             $users = collect(json_decode($this->usersService->readFile($provider)))
                 ->map(function ($user) use ($type) {
-                    switch ($type) {
-                        case 'x':
-                            $item = [
-                                'id'                => $user->parentIdentification,
-                                'status'            => $this->usersService->mapStatus($user->statusCode, $type),
-                                'balance'           => $user->parentAmount,
-                                'currency'          => $user->Currency,
-                                'registration_date' => date('Y-m-d', strtotime($user->registerationDate)),
-                                'email'             => $user->parentEmail,
-                            ];
-                            break;
-                        case 'y':
-                            $item = [
-                                'id' => $user->id,
-                                'status'            => $this->usersService->mapStatus($user->status, $type),
-                                'balance'           => $user->balance,
-                                'currency'          => $user->currency,
-                                'registration_date' => date('Y-m-d',
-                                    strtotime(str_replace('/', '-', $user->created_at))),
-                                'email'             => $user->email,
-                            ];
-                            break;
-                    }
-                    return $item;
+                    return (new UserTransformer())->transform($user, $type);
                 })->filter(function ($user) use ($request) {
                     if (array_key_exists('statusCode', $request)) {
                         return $user['status'] == $request['statusCode'];
