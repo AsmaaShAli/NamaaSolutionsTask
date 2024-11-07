@@ -14,7 +14,7 @@ use App\Http\Controllers\API\UsersController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::GET("users", UsersController::class);
+Route::GET("users", UsersController::class)->name('api.users');;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

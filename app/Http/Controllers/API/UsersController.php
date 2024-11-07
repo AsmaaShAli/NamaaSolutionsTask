@@ -7,6 +7,7 @@ use App\Services\UsersService;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
 {
@@ -23,7 +24,7 @@ class UsersController extends Controller
     public function __invoke()
     {
         $all_providers = ['DataProviderX','DataProviderY'];
-        $providers = Arr::wrap($this->request->provider) ?? $all_providers;
+        $providers = $this->request->provider ? Arr::wrap($this->request->provider) : $all_providers;
 
         $request = $this->request->all();
         $filtered_users = [];
@@ -52,6 +53,8 @@ class UsersController extends Controller
             $filtered_users = array_merge($filtered_users,$users->toArray());
         }
 
-        dd($filtered_users);
+        return responder()->success([
+                'users' => $filtered_users
+            ])->respond(Response::HTTP_OK);
     }
 }

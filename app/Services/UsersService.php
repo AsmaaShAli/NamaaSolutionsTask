@@ -25,6 +25,7 @@ class UsersService
             'x' => 'DataProviderX',
             'y' => 'DataProviderY',
             'z' => 'DataProviderZ',
+            'test'  => 'DataProviderX-test', // for testing purposes only
             //..,
             //..,
             //etc
